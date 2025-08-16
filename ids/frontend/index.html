@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <title>网络攻击类型识别系统 — 实时监控</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>网络攻击类型识别系统（实时）</h1>
+
+    <div id="banner" class="banner hidden"></div>
+
+    <section class="container">
+        <div class="toolbar">
+            <button id="pauseBtn">暂停</button>
+            <button id="resumeBtn" disabled>继续</button>
+            <span id="status">正在监听…</span>
+        </div>
+
+        <table id="feed">
+            <thead>
+                <tr>
+                    <th style="width:140px;">时间</th>
+                    <th style="width:160px;">预测结果</th>
+                    <th style="width:120px;">置信度</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody id="feedBody">
+            </tbody>
+        </table>
+    </section>
+
+    <script src="/static/script.js" defer></script>
+</body>
+</html>

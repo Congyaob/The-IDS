@@ -1,0 +1,91 @@
+body {
+    font-family: -apple-system, Segoe UI, Arial, sans-serif;
+    background: #fafafa;
+    margin: 0;
+    padding: 24px;
+}
+
+h1 {
+    margin: 0 0 16px;
+}
+
+.container {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.06);
+}
+
+.toolbar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+button {
+    padding: 8px 14px;
+    border: 0;
+    border-radius: 8px;
+    background: #1e90ff;
+    color: #fff;
+    cursor: pointer;
+}
+
+    button:disabled {
+        background: #aaa;
+        cursor: not-allowed;
+    }
+
+#status {
+    margin-left: 8px;
+    color: #555;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+thead th {
+    background: #f6f6f6;
+    font-weight: 600;
+}
+
+tr:nth-child(even) td {
+    background: #fcfcfc;
+}
+
+.benign {
+    color: #2e7d32;
+    font-weight: 600;
+}
+
+.attack {
+    color: #c62828;
+    font-weight: 700;
+}
+
+.banner {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.06);
+}
+
+.hidden {
+    display: none;
+}

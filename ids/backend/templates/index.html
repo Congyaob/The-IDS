@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FNN Attack Detector</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>网络攻击类型识别系统</h1>
+        <p>请输入 76 维特征（以逗号分隔），点击“预测”按钮进行检测：</p>
+
+        <textarea id="featureInput" rows="6" placeholder="例如：0.1,0.5,... 共76个数"></textarea>
+        <button onclick="predict()">预测</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
