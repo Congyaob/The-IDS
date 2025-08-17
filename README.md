@@ -65,9 +65,11 @@ Generates evaluation metrics and visualizations (e.g., confusion matrix, per-cla
 
 ### 3. Real‑Time Deployment (Inference)
 ```bash
-python res.py
+cd ids/
+python app.py
 ```
-Runs the real-time packet capture, feature extraction, FNN inference, and stores predictions into `detection_logs.db`.
+Then visit: http://127.0.0.1:5000 to view detection results.
+Feature extraction runs automatically using feature_extractor.py to capture live traffic and generate model input.
 
 ##  Highlights
 
