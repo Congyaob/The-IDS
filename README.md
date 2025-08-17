@@ -4,30 +4,41 @@ A lightweight and efficient real‑time intrusion detection system (IDS) built o
 
 ##  Repository Structure
 
-```
-The‑IDS/
-├── DataSet/                     # Raw datasets and preprocessing scripts (demonstrative / external due to privacy)
-├── models/                      # Trained model weights
-│   ├── advanced_fnn_best_cleaned.pth
-│   └── advanced_fnn_final_cleaned.pth
-├── results/                     # Evaluation outputs and visualizations
-│   ├── loss_curve_advanced_fnn_cleaned.png
-│   ├── confusion_matrix_cleaned.png
-│   ├── f1_per_class_cleaned.png
-│   ├── support_per_class_cleaned.png
-│   └── wrong_predictions.csv
-├── utils.py                     # Utility functions for feature handling, plotting, etc.
-├── train_fnn_cicids2017.py      # Training script using CICIDS2017 dataset
-├── train_fnn_v2.py              # Alternative or extended training version
-├── evaluate_model.py            # Model evaluation script
-├── fnn_scaler.pkl               # Scaler for data normalization
-├── fnn_label_encoder.pkl        # Label encoder for mapping class labels
-├── advanced_fnn_best_cleaned.pth
-├── advanced_fnn_final_cleaned.pth
-├── res.py                       # Deployment or inference orchestration script
-├── detection_logs.db            # SQLite log file for inference results (generated during runtime)
-└── README.md                    # This file
-```
+# Lightweight Feedforward IDS (The-IDS)
+
+This repository contains a lightweight real-time Intrusion Detection System (IDS) based on a Feedforward Neural Network (FNN). The project includes model training scripts, real-time feature extraction using Scapy, a Flask-based backend for model inference and alert logging, and a browser-based frontend for visualization.
+
+## 📁 Project Structure
+
+```bash
+├── Trainning/                     # Model training and evaluation scripts
+│   ├── train_fnn_cicids2017.py    # Main training script using CICIDS2017
+│   ├── evaluate_model.py          # Evaluation script for trained model
+│   └── merge.py                   # Dataset merging utility (if needed)
+
+├── ids/                           # Core backend codebase
+│   ├── app.py                     # Main Flask application
+│   ├── app_diag1.py               # Diagnostic endpoints (optional)
+│   ├── app_probe.py               # Probe test module
+│   ├── scaler.pkl                 # Trained scaler for preprocessing
+│   ├── backend/
+│   │   ├── model/
+│   │   │   └── advanced_fnn_best_cleaned.pth  # Trained PyTorch model
+│   │   └── templates/
+│   │       └── index.html         # HTML template for backend
+│   └── __pycache__/               # Python bytecode cache
+
+├── frontend/                      # Web-based frontend for real-time display
+│   ├── index.html                 # Main UI
+│   ├── script.js                  # JavaScript logic
+│   ├── style.css                  # CSS styling
+│   ├── db_logger.py               # Logs detection to database
+│   ├── detections.db              # SQLite database for storing alerts
+│   ├── detection_logs.db          # Alternate database
+│   └── feature_extractor.py      # Scapy-based feature extraction
+
+└── README.md                      # Project documentation
+
 
 ##  Prerequisites
 
