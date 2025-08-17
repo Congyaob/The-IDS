@@ -11,9 +11,6 @@ import torch
 import torch.nn as nn
 import joblib
 
-# ------------------------------
-# 路径与 Flask 实例
-# ------------------------------
 BASE_DIR = Path(__file__).resolve().parent                  # .../ids/backend
 PROJECT_ROOT = BASE_DIR.parent                              # .../ids
 FRONTEND_DIR = (PROJECT_ROOT / "frontend").resolve()        # .../ids/frontend
@@ -22,7 +19,6 @@ INDEX_HTML = FRONTEND_DIR / "index.html"
 MODEL_PATH = BASE_DIR / "model" / "advanced_fnn_best_cleaned.pth"
 SCALER_PATH = BASE_DIR / "scaler.pkl"
 
-# 数据库路径：优先环境变量 IDS_DB_PATH；否则尝试项目根目录 detections.db，再回退到 backend/detections.db
 _env_db = os.environ.get("IDS_DB_PATH", "").strip()
 if _env_db:
     DB_PATH = Path(_env_db).resolve()
@@ -32,17 +28,12 @@ else:
     DB_PATH = cand1 if cand1.exists() else cand2
 DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-print("🛠 FRONTEND_DIR:", FRONTEND_DIR)
-print("🛠 INDEX_HTML  :", INDEX_HTML)
-print("🗄  DB_PATH     :", DB_PATH)
+print("FRONTEND_DIR:", FRONTEND_DIR)
+print("INDEX_HTML  :", INDEX_HTML)
+print("DB_PATH     :", DB_PATH)
 
-# 一定先创建 app，再写 @app.route
 app = Flask(__name__, static_folder=None)
 
-
-# ------------------------------
-# 前端页面与静态资源
-# ------------------------------
 @app.route("/")
 def index():
     if not INDEX_HTML.exists():
@@ -55,13 +46,9 @@ def static_files(path: str):
 
 @app.route("/favicon.ico")
 def favicon():
-    # 可自行放一个 favicon 到 frontend 里；这里先返回 204
     return ("", 204)
 
 
-# ------------------------------
-# 模型与推理
-# ------------------------------
 INPUT_SIZE = 78
 NUM_CLASSES = 15
 LABELS = [
@@ -91,12 +78,12 @@ model = nn.Sequential(
 
 def _load_weights_safely(path: Path):
     if not path.exists():
-        print("❌ Model not found:", path)
+        print(" Model not found:", path)
         return
     try:
-        raw = torch.load(str(path), map_location="cpu", weights_only=True)  # 新版推荐
+        raw = torch.load(str(path), map_location="cpu", weights_only=True)  
     except TypeError:
-        raw = torch.load(str(path), map_location="cpu")  # 兼容旧版
+        raw = torch.load(str(path), map_location="cpu")  
     state = raw
     if isinstance(raw, dict) and isinstance(raw.get("state_dict"), dict):
         state = raw["state_dict"]
@@ -108,11 +95,11 @@ def _load_weights_safely(path: Path):
     }
     missing, unexpected = model.load_state_dict(cleaned, strict=False)
     if missing:
-        print("⚠️ Missing keys:", missing)
+        print(" Missing keys:", missing)
     if unexpected:
-        print("⚠️ Unexpected keys:", unexpected)
+        print(" Unexpected keys:", unexpected)
     model.eval()
-    print("✅ Model loaded:", path.name)
+    print("Model loaded:", path.name)
 
 _load_weights_safely(MODEL_PATH)
 
@@ -120,11 +107,11 @@ scaler = None
 if SCALER_PATH.exists():
     try:
         scaler = joblib.load(str(SCALER_PATH))
-        print("✅ Scaler loaded")
+        print("Scaler loaded")
     except Exception as e:
-        print("⚠️ Scaler load failed:", e)
+        print("Scaler load failed:", e)
 else:
-    print("ℹ️ No scaler file, continue without scaler")
+    print("No scaler file, continue without scaler")
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -152,17 +139,6 @@ def predict():
         return jsonify({"error": str(e)}), 500
 
 
-# ------------------------------
-# 日志（实时流接口供前端轮询）
-# 需要表结构类似：
-#   CREATE TABLE logs (
-#     id INTEGER PRIMARY KEY AUTOINCREMENT,
-#     ts TEXT,
-#     features TEXT,
-#     prediction TEXT,
-#     confidence TEXT
-#   );
-# ------------------------------
 def _dict_row(cursor, row):
     return {col[0]: row[idx] for idx, col in enumerate(cursor.description)}
 
@@ -184,9 +160,9 @@ def _fetch_logs(since_id: int = 0, limit: int = 100):
 @app.route("/logs")
 def logs():
     """
-    轮询：
+    Polling：
       GET /logs?since=<last_id>&limit=100
-    返回：
+    Return：
       { "items":[{id, ts, prediction, prediction_label, max_conf}], "last_id": <id> }
     """
     try:
@@ -203,7 +179,6 @@ def logs():
     out = []
     for r in items:
         pred = r.get("prediction", "Class0")
-        # 解析 confidence：可能是 JSON 字符串
         conf_raw = r.get("confidence", [])
         if isinstance(conf_raw, str):
             try:
@@ -241,8 +216,5 @@ def healthz():
     return jsonify({"status": "ok"}), 200
 
 
-# ------------------------------
-# 启动
-# ------------------------------
 if __name__ == "__main__":
     app.run(debug=True, host="127.0.0.1", port=5000)
