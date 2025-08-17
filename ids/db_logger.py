@@ -4,7 +4,6 @@ from pathlib import Path
 import os, json, sqlite3
 from datetime import datetime
 
-# 与后端保持一致：优先 IDS_DB_PATH，否则用项目根目录 detections.db
 PROJECT_ROOT = Path(__file__).resolve().parent
 _env = os.environ.get("IDS_DB_PATH", "").strip()
 DB_PATH = Path(_env).resolve() if _env else (PROJECT_ROOT / "detections.db")
