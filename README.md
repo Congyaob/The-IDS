@@ -67,6 +67,7 @@ Generates evaluation metrics and visualizations (e.g., confusion matrix, per-cla
 ```bash
 cd ids/
 python app.py
+python feature_extractor.py
 ```
 Then visit: http://127.0.0.1:5000 to view detection results.
 Feature extraction runs automatically using feature_extractor.py to capture live traffic and generate model input.
