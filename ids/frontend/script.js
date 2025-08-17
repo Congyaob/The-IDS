@@ -13,7 +13,7 @@ pauseBtn.onclick = () => {
     clearInterval(timer);
     pauseBtn.disabled = true;
     resumeBtn.disabled = false;
-    statusEl.textContent = "已暂停";
+    statusEl.textContent = "Paused";
 };
 
 resumeBtn.onclick = () => {
@@ -21,12 +21,12 @@ resumeBtn.onclick = () => {
     startPolling();
     pauseBtn.disabled = false;
     resumeBtn.disabled = true;
-    statusEl.textContent = "正在监听…";
+    statusEl.textContent = "Listening...";
 };
 
 function startPolling() {
     timer = setInterval(fetchLogs, 2000);
-    fetchLogs(); // 立即取一次
+    fetchLogs();
 }
 
 async function fetchLogs() {
@@ -42,7 +42,7 @@ async function fetchLogs() {
             for (const it of items) {
                 appendRow(it);
                 if (it.prediction !== "Class0") {
-                    showAlert(`⚠️ 发现疑似攻击：${it.prediction_label}（置信度 ${(it.max_conf * 100).toFixed(2)}%）`);
+                    showAlert(`Suspected attack detected：${it.prediction_label}（Confidence ${(it.max_conf * 100).toFixed(2)}%）`);
                 }
             }
         }
@@ -59,17 +59,15 @@ function appendRow({ ts, prediction, prediction_label, max_conf }) {
     <td>${ts}</td>
     <td class="${benign ? 'benign' : 'attack'}">${prediction_label}</td>
     <td>${(max_conf * 100).toFixed(2)}%</td>
-    <td>${benign ? '正常流量' : '请核查该连接/主机的异常行为'}</td>
+    <td>${benign ? 'Normal traffic' : 'Please check the abnormal behavior of the connection/host'}</td>
   `;
     feedBody.appendChild(tr);
 
-    // 只保留最近 500 条
     const MAX_ROWS = 500;
     while (feedBody.rows.length > MAX_ROWS) {
         feedBody.deleteRow(0);
     }
 
-    // 自动滚动到底
     tr.scrollIntoView({ block: "end" });
 }
 
