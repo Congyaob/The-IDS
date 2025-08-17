@@ -9,13 +9,11 @@ from sklearn.metrics import classification_report, confusion_matrix
 import json
 import os
 
-# ========== 配置路径 ==========
 model_path = r"F:\Project\AI\advanced_fnn_final_cleaned.pth"
 scaler_path = r"F:\Project\AI\fnn_scaler.pkl"
 encoder_path = r"F:\Project\AI\fnn_label_encoder.pkl"
 test_csv_path = r"F:\Project\Dataset\MachineLearningCVE\test_cleaned_scaled.csv"
 
-# ========== 模型结构 ==========
 class AdvancedFNN(nn.Module):
     def __init__(self, input_size, num_classes):
         super().__init__()
@@ -38,27 +36,22 @@ class AdvancedFNN(nn.Module):
     def forward(self, x):
         return self.model(x)
 
-# ========== 加载工具 ==========
 encoder = joblib.load(encoder_path)
 scaler = joblib.load(scaler_path)
 
-# ========== 加载测试数据 ==========
 df = pd.read_csv(test_csv_path)
 X = df.drop(columns=["Label"]).values
 y_true = df["Label"].astype(str).values
 
-# 只保留训练中存在的标签
 known_labels = set(encoder.classes_)
 mask = np.array([label in known_labels for label in y_true])
 X = X[mask]
 y_true = y_true[mask]
 
-# ========== 数据预处理 ==========
 X_scaled = scaler.transform(X)
 X_tensor = torch.tensor(X_scaled, dtype=torch.float32)
 y_encoded = encoder.transform(y_true)
 
-# ========== 加载模型 ==========
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Using device:", device)
 
@@ -68,12 +61,10 @@ model = AdvancedFNN(input_size, num_classes).to(device)
 model.load_state_dict(torch.load(model_path, map_location=device, weights_only=True))
 model.eval()
 
-# ========== 模型预测 ==========
 with torch.no_grad():
     outputs = model(X_tensor.to(device))
     y_pred = torch.argmax(outputs, dim=1).cpu().numpy()
 
-# ========== 分类报告 ==========
 report = classification_report(
     y_encoded,
     y_pred,
@@ -82,18 +73,15 @@ report = classification_report(
     output_dict=True
 )
 
-# 保存 JSON 报告
 with open("classification_report_cleaned.json", "w") as f:
     json.dump(report, f, indent=4)
-print("✅ 分类报告已保存为 classification_report_cleaned.json")
+print(" Classification report saved as classification_report_cleaned.json")
 
-# 打印宏平均和加权 F1 分数
 macro_f1 = report["macro avg"]["f1-score"]
 weighted_f1 = report["weighted avg"]["f1-score"]
 print(f"Macro F1-score: {macro_f1:.4f}")
 print(f"Weighted F1-score: {weighted_f1:.4f}")
 
-# ========== 错误预测导出 ==========
 decoded_preds = encoder.inverse_transform(y_pred)
 df_wrong = pd.DataFrame({
     "True Label": y_true,
@@ -101,7 +89,7 @@ df_wrong = pd.DataFrame({
 })
 df_wrong["Match"] = df_wrong["True Label"] == df_wrong["Predicted Label"]
 df_wrong[~df_wrong["Match"]].to_csv("wrong_predictions.csv", index=False)
-print("⚠️ 错误预测已导出为 wrong_predictions.csv")
+print(" Error predictions are exported as wrong_predictions.csv")
 
 # ========== 可视化 ==========
 cm = confusion_matrix(y_encoded, y_pred)
@@ -134,4 +122,4 @@ plt.tight_layout()
 plt.savefig("support_per_class_cleaned.png")
 plt.close()
 
-print("📊 图表已保存：confusion_matrix_cleaned.png, f1_per_class_cleaned.png, support_per_class_cleaned.png")
+print("Chart saved：confusion_matrix_cleaned.png, f1_per_class_cleaned.png, support_per_class_cleaned.png")
